@@ -45,10 +45,19 @@ namespace myBook.Services
             var allBooks = _context.Books.ToList();
             return allBooks;
         }
-        public Book GetBookById(int bookId)
+        public BookWithAuthorsVM GetBookById(int bookId)
         {
-            var book = _context.Books.FirstOrDefault(n=>n.Id==bookId);
-            return book;
+            var _bookWithAuthors = _context.Books.Where(n => n.Id == bookId).Select(book => new BookWithAuthorsVM()
+            {
+                Title = book.Title,
+                Description = book.Description,
+                Rate = book.Rate,
+                Genre = book.Genre,
+                PublisherName = book.Publisher.Name,
+                AuthorNames = book.BookAuthor.Select(n => n.Author.FullName).ToList()
+            }).FirstOrDefault();
+
+            return _bookWithAuthors;
         }
         public Book UpdateBookById(int bookId,BookVM book)
         {
